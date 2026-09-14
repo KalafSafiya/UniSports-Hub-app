@@ -1,4 +1,5 @@
 import React from "react";
+import ProtectedRoute from "./ProtectedRoute";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Guest Pages
@@ -36,6 +37,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         {/* Admin Routes */}
+        <Route element={<ProtectedRoute role="Admin" />}>
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/news-and-announcements" element={<AdminManageNews />} />
         <Route path="/sports-requests" element={<AdminTeamApprovals />} />
@@ -44,11 +46,14 @@ function App() {
         <Route path="/contact-requests" element={<AdminContactRequests />} />
         <Route path="/manage-coaches" element={<AdminManageCoaches />} />
 
+        </Route>
         {/* Coach Routes */}
+        <Route element={<ProtectedRoute role="Coach" />}>
         <Route path="/coach-dashboard" element={<CoachDashBoard />} />
         <Route path="/manage-team" element={<CoachManageTeams />} />
         <Route path="/schedule-session" element={<CoachManageSchedule />} />
 
+        </Route>
         {/* Auth/Login */}
 
 
