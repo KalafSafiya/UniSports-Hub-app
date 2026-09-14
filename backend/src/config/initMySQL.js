@@ -1,19 +1,16 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
-
-async function initMySQL() {
+module.exports = async function initMySQL() {
+    if (!process.env.MYSQL_DB) throw new Error('MYSQL_DB is required');
     const connection = await mysql.createConnection({
         host: process.env.MYSQL_HOST,
+        port: Number(process.env.MYSQL_PORT || 3306),
         user: process.env.MYSQL_USER,
         password: process.env.MYSQL_PASS
     });
-
-    await connection.query(
-        `CREATE DATABASE IF NOT EXISTS \`${process.env.MYSQL_DB}\``
-    );
-
-    console.log('MySQL database ensured');
-    await connection.end();
-}
-
-module.exports = initMySQL;
+    try {
+        await connection.query('CREATE DATABASE IF NOT EXISTS ??', [process.env.MYSQL_DB]);
+    } finally {
+        await connection.end();
+    }
+};

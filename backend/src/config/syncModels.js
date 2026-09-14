@@ -20,6 +20,7 @@ async function syncModels() {
     }
     catch (error) {
         console.error("MySQL sync error: ", error);
+        throw error;
     }
 }
 

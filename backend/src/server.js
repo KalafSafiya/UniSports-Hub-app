@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 5000;
 
 (async () => {
   try {
+    if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
     // Connect MongoDB
     await connectMongo();
 
@@ -23,5 +24,6 @@ const PORT = process.env.PORT || 5000;
     });
   } catch (err) {
     console.error("Server startup error:", err);
+    process.exit(1);
   }
 })();
