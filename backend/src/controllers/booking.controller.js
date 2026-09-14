@@ -1,3 +1,4 @@
+const validateSession = require('../utils/validateSession');
 const Booking = require('../models/mysql/Booking');
 const Sport = require('../models/mysql/Sport'); // [FIX]: Added missing import
 const Venue = require('../models/mysql/Venue'); // [FIX]: Added missing import
@@ -13,7 +14,9 @@ exports.createBooking = async (req, res) => {
             start_time, end_time, event_name, additional_notes 
         } = req.body;
 
-        // const dateInt = date ? parseInt(date.replace(/-/g, '')) : null;
+        if (!validateSession({ date, start_time, end_time }) || !venue_id || !user_name || !user_email || !['Student', 'Staff', 'Coach'].includes(role)) {
+            return res.status(400).json({ message: 'Valid booking details and time interval are required' });
+        }
 
         const newBooking = await Booking.create({
             role,
@@ -58,11 +61,14 @@ exports.getPendingBookings = async (req, res) => {
 exports.updateBookingStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { status, reason, user_email, event_name } = req.body;
+        const { status, reason } = req.body;
+        if (!['Approved', 'Rejected'].includes(status)) return res.status(400).json({ message: 'Invalid booking status' });
 
         const booking = await Booking.findByPk(id);
         if (!booking) return res.status(404).json({ message: "Booking not found" });
 
+        const user_email = booking.email;
+        const event_name = booking.event_name;
         if (status === 'Approved') {
             const conflictBooking = await Booking.findOne({
                 where: {
@@ -155,7 +161,12 @@ exports.updateBookingStatus = async (req, res) => {
         };
 
         // This line sends the email automatically
-        await transporter.sendMail(mailOptions);
+        try {
+            await transporter.sendMail(mailOptions);
+        } catch (mailError) {
+            console.error('Booking notification failed:', mailError);
+            return res.status(200).json({ message: 'Status updated, but email could not be sent', emailSent: false });
+        }
 
         res.status(200).json({ message: "Status updated and email sent!" });
 
