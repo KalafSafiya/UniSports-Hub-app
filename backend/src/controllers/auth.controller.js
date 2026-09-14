@@ -9,9 +9,12 @@ exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
 
+        if (typeof username !== 'string' || !username.trim() || typeof password !== 'string' || !password) {
+            return res.status(400).json({ message: 'Username and password are required' });
+        }
         // Find user
         const user = await User.findOne({ where: { username }});
-        if (!user) {
+        if (!user || user.status !== 'Active') {
             return res.status(401).json({ message: "Invalid Credentials" });
         }
 
