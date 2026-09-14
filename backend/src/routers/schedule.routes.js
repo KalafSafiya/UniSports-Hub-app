@@ -1,3 +1,4 @@
+const requireRole = require('../middlewares/requireRole');
 const router = require('express').Router();
 const scheduleController = require('../controllers/schedule.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
@@ -17,19 +18,19 @@ router.delete('/coach/:id', authMiddleware, scheduleController.deleteCoachSchedu
 
 /** Admin routes */
 // Get Pending Schedule 
-router.get('/admin/pending', authMiddleware, scheduleController.getPendingSchedules)
+router.get('/admin/pending', authMiddleware, requireRole('Admin'), scheduleController.getPendingSchedules)
 
 // Get approved schedules
-router.get('/admin/approved', authMiddleware, scheduleController.getApprovedSchedules);
+router.get('/admin/approved', authMiddleware, requireRole('Admin'), scheduleController.getApprovedSchedules);
 
 // Get rejected schedules
-router.get('/admin/rejected', authMiddleware, scheduleController.getRejectedSchedules);
+router.get('/admin/rejected', authMiddleware, requireRole('Admin'), scheduleController.getRejectedSchedules);
 
 // Approve a schedule
-router.put('/admin/approve/:id', authMiddleware, scheduleController.approveSchedule);
+router.put('/admin/approve/:id', authMiddleware, requireRole('Admin'), scheduleController.approveSchedule);
 
 // Reject a schedule
-router.put('/admin/reject/:id', authMiddleware, scheduleController.rejectSchedule);
+router.put('/admin/reject/:id', authMiddleware, requireRole('Admin'), scheduleController.rejectSchedule);
 
 /** Guest routes */
 router.get('/guest', scheduleController.getAllApprovedSchedules);
