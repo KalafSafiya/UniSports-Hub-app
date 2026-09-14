@@ -1,3 +1,4 @@
+const validateSession = require('../utils/validateSession');
 const Schedule = require('../models/mysql/Schedule');
 const Sport = require('../models/mysql/Sport');
 const Team = require('../models/mysql/Team');
@@ -15,6 +16,11 @@ exports.createScheduleRequest = async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
 
+        if (!validateSession({ date, start_time, end_time }) || !['Practice', 'Match'].includes(type)) {
+            return res.status(400).json({ message: 'Invalid session date, time or type' });
+        }
+        const ownedSport = await Sport.findOne({ where: { sport_id, coach_id: req.user.user_id } });
+        if (!ownedSport) return res.status(403).json({ message: 'Unauthorized sport' });
         const schedule = await Schedule.create({
             sport_id, 
             venue_id,
@@ -199,6 +205,12 @@ exports.updateCoachSchedule = async (req, res) => {
             return res.status(404).json({ message: 'Schedule not found' });
         }
 
+        const owner = await Sport.findOne({ where: { sport_id: schedule.sport_id, coach_id: coachId } });
+        if (!owner) return res.status(403).json({ message: 'Unauthorized access' });
+        const sessionDate = date ?? (schedule.date instanceof Date ? schedule.date.toISOString().slice(0, 10) : schedule.date);
+        if (!validateSession({ date: sessionDate, start_time: start_time ?? schedule.start_time, end_time: end_time ?? schedule.end_time }) || !['Practice', 'Match'].includes(type ?? schedule.type)) {
+            return res.status(400).json({ message: 'Invalid session date, time or type' });
+        }
         const targetSportId = sport_id ?? schedule.sport_id;
 
         const sport = await Sport.findOne({
@@ -273,7 +285,7 @@ exports.approveSchedule = async (req, res) => {
 
         const schedule = await Schedule.findByPk(id);
         if (!schedule) {
-            res.status(404).json({ message: 'Schedule not found' });
+            return res.status(404).json({ message: 'Schedule not found' });
         }
 
         const conflictBooking = await Booking.findOne({
