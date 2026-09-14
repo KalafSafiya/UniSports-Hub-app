@@ -6,18 +6,18 @@ import api from "../../Services/api";
 function CoachManageTeams() {
     const [sports, setSports] = useState([]);
     const [selectedSportIndex, setSelectedSportIndex] = useState(null);
-    
+
     // Modal Visibility States
     const [showSportModal, setShowSportModal] = useState(false);
     const [showTeamModal, setShowTeamModal] = useState(false);
     const [showConfirmBox, setShowConfirmBox] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false); 
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [confirmMessage, setConfirmMessage] = useState("");
 
     // Form States
     const [sportForm, setSportForm] = useState({ name: "", description: "" });
     const [teamForm, setTeamForm] = useState({ id: null, name: "", members: [] });
-    const [teamToDelete, setTeamToDelete] = useState(null); 
+    const [teamToDelete, setTeamToDelete] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
@@ -38,15 +38,15 @@ function CoachManageTeams() {
     const handleSendSportRequest = async () => {
         if (!sportForm.name) return;
         try {
-            await api.post("/sports", { 
-                sport_name: sportForm.name, 
-                description: sportForm.description 
+            await api.post("/sports", {
+                sport_name: sportForm.name,
+                description: sportForm.description
             });
             setShowSportModal(false);
             setSportForm({ name: "", description: "" });
             setConfirmMessage("Your sport request has been sent to the admin.");
             setShowConfirmBox(true);
-        } catch (error) { 
+        } catch (error) {
             console.error("Sport Request Error:", error);
             alert("Failed to send sport request.");
         }
@@ -62,7 +62,7 @@ function CoachManageTeams() {
                     team_name: teamForm.name,
                     members: teamForm.members
                 });
-                setConfirmMessage("Team details updated successfully.");
+                setConfirmMessage("Team changes submitted for admin approval.");
             } else {
                 // Create new team request
                 await api.post("/teams", {
@@ -103,7 +103,7 @@ function CoachManageTeams() {
             setTeamToDelete(null);
             setConfirmMessage("The team has been successfully removed.");
             setShowConfirmBox(true);
-            fetchData(); 
+            fetchData();
         } catch (error) {
             setShowDeleteModal(false);
             console.error("Removal Error:", error);
@@ -113,9 +113,9 @@ function CoachManageTeams() {
     const handleAddMemberField = () => {
         setTeamForm({
             ...teamForm,
-            members: [...teamForm.members, { 
-                member_name: "", registration_number: "", 
-                role: "Player", faculty: "Faculty of Applied Science", year: "" 
+            members: [...teamForm.members, {
+                member_name: "", registration_number: "",
+                role: "Player", faculty: "Faculty of Applied Science", year: ""
             }]
         });
     };
@@ -126,12 +126,12 @@ function CoachManageTeams() {
             <main className="flex-grow pt-20 pb-10 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4">
                     <h1 className="text-3xl font-bold mb-6 text-gray-900">Coach Manage Teams</h1>
-                    
+
                     <div className="flex gap-3 mb-8">
                         <button onClick={() => setShowSportModal(true)} className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition shadow-md">Request New Sport</button>
-                        <button 
+                        <button
                             disabled={selectedSportIndex === null}
-                            onClick={() => { setIsEditing(false); setTeamForm({id:null, name:"", members:[]}); setShowTeamModal(true); }} 
+                            onClick={() => { setIsEditing(false); setTeamForm({id:null, name:"", members:[]}); setShowTeamModal(true); }}
                             className="bg-green-600 text-white px-6 py-2 rounded-lg disabled:opacity-50 hover:bg-green-700 transition shadow-md"
                         >
                             Request New Team
@@ -141,7 +141,7 @@ function CoachManageTeams() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {sports.map((sport, sIdx) => (
                             <div key={sport.sport_id}>
-                                <div 
+                                <div
                                     onClick={() => setSelectedSportIndex(selectedSportIndex === sIdx ? null : sIdx)}
                                     className={`p-4 rounded-xl shadow cursor-pointer border-2 transition ${selectedSportIndex === sIdx ? "border-blue-600 bg-blue-50" : "bg-white border-transparent"}`}
                                 >

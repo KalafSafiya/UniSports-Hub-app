@@ -36,14 +36,14 @@ function AdminBookingRequests() {
         try {
             setLoadingId(booking.booking_id); // start loading
 
-            await api.put(`/bookings/${booking.booking_id}/status`, {
+            const response = await api.put(`/bookings/${booking.booking_id}/status`, {
                 status: "Approved",
                 user_email: booking.email,
                 event_name: booking.event_name,
             });
 
             setBookings((prev) => prev.filter((b) => b.booking_id !== booking.booking_id));
-            triggerModal("success", "Booking approved and email sent!");
+            triggerModal("success", response.data.message);
         } catch (error) {
             const msg = error.response?.data?.message || "This slot is already booked.";
             triggerModal("error", msg);
@@ -62,7 +62,7 @@ function AdminBookingRequests() {
         try {
             setLoadingId(booking.booking_id); // start loading
 
-            await api.put(`/bookings/${booking.booking_id}/status`, {
+            const response = await api.put(`/bookings/${booking.booking_id}/status`, {
                 status: "Rejected",
                 reason: rejectReason,
                 user_email: booking.email,
@@ -72,7 +72,7 @@ function AdminBookingRequests() {
             setBookings((prev) => prev.filter((b) => b.booking_id !== booking.booking_id));
             setRejectingId(null);
             setRejectReason("");
-            triggerModal("success", "Booking rejected and reason sent.");
+            triggerModal("success", response.data.message);
         } catch (error) {
             const msg = error.response?.data?.message || "Failed to reject booking.";
             triggerModal("error", msg);

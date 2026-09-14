@@ -10,10 +10,10 @@ router.get('/pending', authMiddleware, requireRole('Admin'), teamController.getP
 router.get('/', teamController.getAllTeams);
 router.post('/', authMiddleware, teamController.createTeam);
 router.get('/:id', teamController.getTeamById);
-router.put('/:id', authMiddleware, requireRole('Admin'), teamController.updateTeam);
+router.put('/:id', authMiddleware, teamController.updateTeam);
 
 // [FIX]: Ensure this matches the exported function name exactly
-router.delete('/:id', authMiddleware, requireRole('Admin'), teamController.deleteTeam);
+router.delete('/:id', authMiddleware, teamController.deleteTeam);
 
 // Coach edits a team
 router.put('/edit-request/:id', authMiddleware, teamController.editTeamRequest);

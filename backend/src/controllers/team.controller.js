@@ -71,28 +71,27 @@ exports.updateTeam = async (req, res) => {
         const team = await Team.findByPk(id);
         if (!team) return res.status(404).json({ message: "Team not found" });
 
-        // Update the Team Name and/or Status
-        await team.update({
-            team_name: team_name || team.team_name,
-            status: status || team.status
-        });
-
-        // If members are provided, sync the team_members table
-        if (members && Array.isArray(members)) {
-            // 1. Remove all existing members for this team
-            await TeamMember.destroy({ where: { team_id: id } });
-            
-            // 2. Map and insert the new/edited member list
-            const memberData = members.map(m => ({
-                team_id: id,
-                member_name: m.member_name,
-                registration_number: m.registration_number,
-                role: m.role,
-                faculty: m.faculty,
-                year: m.year
-            }));
-            await TeamMember.bulkCreate(memberData);
+        if (req.user.role !== 'Admin') {
+            const owner = await Sport.findOne({ where: { sport_id: team.sport_id, coach_id: req.user.user_id } });
+            if (!owner) return res.status(403).json({ message: 'Unauthorized team' });
         }
+        if (members !== undefined && !Array.isArray(members)) return res.status(400).json({ message: 'Members must be an array' });
+        if (status !== undefined && !['Active', 'Inactive'].includes(status)) return res.status(400).json({ message: 'Invalid team status' });
+        await sequelize.transaction(async transaction => {
+            await team.update({
+                team_name: team_name || team.team_name,
+                status: req.user.role === 'Admin' ? (status || team.status) : 'Inactive'
+            }, { transaction });
+            if (Array.isArray(members)) {
+                await TeamMember.destroy({ where: { team_id: id }, transaction });
+                const memberData = members.map(m => ({
+                    team_id: id, member_name: m.member_name,
+                    registration_number: m.registration_number,
+                    role: m.role, faculty: m.faculty, year: m.year
+                }));
+                await TeamMember.bulkCreate(memberData, { transaction, validate: true });
+            }
+        });
 
         res.status(200).json({ message: "Team updated successfully", team });
     } catch (error) {
@@ -159,6 +158,10 @@ exports.deleteTeam = async (req, res) => {
             return res.status(404).json({ message: 'Team not found' });
         }
 
+        if (req.user.role !== 'Admin') {
+            const owner = await Sport.findOne({ where: { sport_id: team.sport_id, coach_id: req.user.user_id } });
+            if (!owner) return res.status(403).json({ message: 'Unauthorized team' });
+        }
         // Deleting the team will automatically delete members due to 
         // the ON DELETE CASCADE constraint in your MySQL table.
         await team.destroy();
