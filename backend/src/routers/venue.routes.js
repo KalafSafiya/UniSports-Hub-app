@@ -7,6 +7,6 @@ const authMiddleware = require('../middlewares/auth.middleware');
 router.post('/', authMiddleware, requireRole('Admin'), venueController.createVenue);
 
 // Get all venues
-router.get('/', authMiddleware, venueController.getAllVenues);
+router.get('/', venueController.getAllVenues);
 
 module.exports = router;
