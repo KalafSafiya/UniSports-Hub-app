@@ -17,6 +17,7 @@ exports.createAnnouncement = async (req, res) => {
         const savedAnnouncement = await announcement.save();
         res.status(201).json(savedAnnouncement);
     } catch (err) {
+        if (['ValidationError', 'CastError'].includes(err.name)) return res.status(400).json({ message: 'Invalid announcement data or ID' });
         console.error('Create announcement error:', err);
         res.status(500).json({ message: "Failed to create announcement" });
     }
@@ -34,6 +35,7 @@ exports.getAllAnnouncements = async (req, res) => {
 
         res.status(200).json(announcements);
     } catch (err) {
+        if (['ValidationError', 'CastError'].includes(err.name)) return res.status(400).json({ message: 'Invalid announcement data or ID' });
         console.error('Get announcements error:', err);
         res.status(500).json({ message: "Failed to retrieve announcements" });
     }
@@ -54,6 +56,7 @@ exports.getAnnouncementById = async (req, res) => {
         res.status(200).json(announcement);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid announcement data or ID' });
         console.error('Get announcement error: ', error);
         res.status(500).json({ message: "Failed to retrieve announcement" });
     }
@@ -68,7 +71,7 @@ exports.updateAnnouncement = async (req, res) => {
         const updateAnnouncement = await Announcement.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         if (!updateAnnouncement) {
@@ -78,6 +81,7 @@ exports.updateAnnouncement = async (req, res) => {
         res.status(200).json(updateAnnouncement);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid announcement data or ID' });
         console.error('Update announcement error: ', error);
         res.status(500).json({ message: "Failed to update announcement" });
     }
@@ -98,6 +102,7 @@ exports.deleteAnnouncement = async (req, res) => {
         res.status(200).json({ message: "Announcement deleted successfully" });
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid announcement data or ID' });
         console.error('Delete announcement error: ', error);
         res.status(500).json({ message: "Failed to delete announcement" });
     }

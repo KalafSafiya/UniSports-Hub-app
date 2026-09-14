@@ -18,6 +18,7 @@ exports.createNews = async (req, res) => {
         res.status(201).json(savedNews);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid news data or ID' });
         console.error('Create news error: ', error);
         res.status(500).json({ message: "Failed to create news" });
     }
@@ -33,6 +34,7 @@ exports.getAllNews = async (req, res) => {
         res.status(200).json(newsList);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid news data or ID' });
         console.error('Get news error: ', error);
         res.status(500).json({ message: "Failed to retrieve news" });
     }
@@ -53,6 +55,7 @@ exports.getNewsById = async (req, res) => {
         res.status(200).json(news);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid news data or ID' });
         console.error('Get news error: ', error);
         res.status(500).json({ message: "Failed to retrieve news" });
     }
@@ -67,7 +70,7 @@ exports.updateNews = async (req, res) => {
         const updateNews = await News.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         if (!updateNews) {
@@ -77,6 +80,7 @@ exports.updateNews = async (req, res) => {
         res.status(200).json(updateNews);
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid news data or ID' });
         console.error('Update news error: ', error);
         res.status(500).json({ message: "Failed to update news" });
     }
@@ -97,6 +101,7 @@ exports.deleteNews = async (req, res) => {
         res.status(200).json({ message: "News deleted successfully"});
     }
     catch (error) {
+        if (['ValidationError', 'CastError'].includes(error.name)) return res.status(400).json({ message: 'Invalid news data or ID' });
         console.error('Delete news errorL ', error);
         res.status(500).json({ message: "Failed to delete news" });
     }
