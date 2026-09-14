@@ -47,7 +47,7 @@ exports.getAllSports = async (req, res) => {
     } 
     catch (error) {
         console.error('Error fetching sports: ', error);
-        req.status(500).json({ message: 'Failed to fectch sports' });
+        res.status(500).json({ message: 'Failed to fectch sports' });
     }
 }
 
@@ -80,7 +80,10 @@ exports.getPendingRequests = async (req, res) => {
 exports.updateSportStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const { action, image } = req.body; 
+        const { action, image } = req.body;
+        if (!['approve', 'reject'].includes(action)) {
+            return res.status(400).json({ message: 'Invalid sport action' });
+        }
 
         const sport = await Sport.findByPk(id);
         if (!sport) return res.status(404).json({ message: 'Sport not found' });
@@ -174,6 +177,8 @@ exports.getApprovedSportsWithTeams = async (req, res) => {
                 {
                     model: Team,
                     attributes: ['team_id', 'team_name'],
+                    where: { status: 'Active' },
+                    required: false,
                     include: [
                         {
                             model: TeamMember,

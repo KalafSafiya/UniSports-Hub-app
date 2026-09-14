@@ -31,7 +31,7 @@ exports.getAdminDashboardStats = async (req, res) => {
         });
 
         const pendingTeams = await Team.count({
-            where: { status: 'Pending' }
+            where: { status: 'Inactive' }
         });
 
         res.status(200).json({
@@ -74,7 +74,7 @@ exports.getCoachDashboardStats = async (req, res) => {
         });
 
         const pendingTeams = await Team.count({
-            where: { status: 'Pending' }
+            where: { status: 'Inactive' }
         });
 
         res.status(200).json({
