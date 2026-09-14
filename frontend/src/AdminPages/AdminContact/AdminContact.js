@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../../AdminComponents/NavBar";
 import Footer from "../../GuestComponents/Footer";
 import {
+    downloadContactAttachment,
     getAllContactRequests,
     updateContactRequestStatus
 } from '../../Services/contactRequestService';
@@ -50,6 +51,10 @@ function AdminContactRequests() {
         }
     };
 
+    const handleAttachment = async (request) => {
+        try { await downloadContactAttachment(request.request_id, request.attachment); }
+        catch { alert('Failed to download attachment'); }
+    };
     return (
         <div className="flex flex-col min-h-screen">
             <Navbar />
@@ -110,7 +115,8 @@ function AdminContactRequests() {
                                             <p className="mt-2">
                                                 Attachment:{" "}
                                                 <a
-                                                    href={`http://localhost:5000/uploads/contact/${req.attachment}`}
+                                                    href="#attachment"
+                                                    onClick={(event) => { event.preventDefault(); handleAttachment(req); }}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-blue-600 underline"

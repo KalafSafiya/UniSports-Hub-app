@@ -61,6 +61,9 @@ exports.updateRequestStatus = async (req, res) => {
             return res.status(404).json({ message: 'Contact request not found' });
         }
 
+        if (status !== undefined && !['Pending', 'Read', 'Resolved'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid contact status' });
+        }
         request.status = status || 'Read';
         await request.save();
 

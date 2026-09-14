@@ -40,9 +40,14 @@ app.use("/api/bookings", require('./routers/booking.routes'));
 app.use('/api/contact', require('./routers/contactRequest.routes'));
 
 // Uploads
-app.use('/uploads', express.static('uploads'));
+// Contact attachments are served only through the authenticated contact route.
 
 // Stats
 app.use('/api/stats', require('./routers/stats.routes'));
 
+app.use((error, req, res, next) => {
+    if (res.headersSent) return next(error);
+    const status = error.code === 'LIMIT_FILE_SIZE' ? 413 : (error.status === 400 || error.name === 'MulterError' ? 400 : 500);
+    res.status(status).json({ message: status === 413 ? 'Attachment exceeds 10 MB' : status === 400 ? 'Invalid request' : 'Internal Server Error' });
+});
 module.exports = app;
