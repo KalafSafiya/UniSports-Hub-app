@@ -1,6 +1,6 @@
 import api from './api';
 
-const API_URL = 'http://localhost:5000/api/schedules'
+const API_URL = '/schedules'
 
 const authHeader = () => ({
     headers: {

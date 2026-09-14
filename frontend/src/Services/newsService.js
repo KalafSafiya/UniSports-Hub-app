@@ -1,6 +1,6 @@
 import api from './api';
 
-const API_URL = "http://localhost:5000/api/news";
+const API_URL = "/news";
 
 // Fetch all news
 export const getNews = async () => {

@@ -1,6 +1,6 @@
 import api from './api';
 
-const API_URL = "http://localhost:5000/api/stats";
+const API_URL = "/stats";
 
 const authHeader = () => ({
     headers: {

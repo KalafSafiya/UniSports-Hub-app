@@ -1,6 +1,6 @@
 import api from './api';
 
-const API_URL = "http://localhost:5000/api/users";
+const API_URL = "/users";
 
 // Create a new user
 export const createUser = async (data) => {
