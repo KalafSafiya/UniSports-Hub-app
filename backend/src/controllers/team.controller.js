@@ -15,20 +15,26 @@ exports.createTeam = async (req, res) => {
             return res.status(400).json({ message: "Team name and sport id are required." });
         }
 
-        const team = await Team.create({
+        if (members !== undefined && !Array.isArray(members)) return res.status(400).json({ message: 'Members must be an array' });
+        const owner = await Sport.findOne({ where: { sport_id, coach_id: req.user.user_id } });
+        if (!owner) return res.status(403).json({ message: 'Unauthorized sport' });
+        const team = await sequelize.transaction(async transaction => {
+        const created = await Team.create({
             team_name,
             sport_id,
             status: 'Inactive' // Default status for admin review
-        });
+        }, { transaction });
 
         if (members && members.length > 0) {
             const memberData = members.map(m => ({
                 ...m,
-                team_id: team.team_id
+                team_id: created.team_id
             }));
-            await TeamMember.bulkCreate(memberData);
+            await TeamMember.bulkCreate(memberData, { transaction, validate: true });
         }
 
+        return created;
+        });
         res.status(201).json(team);
     }
     catch (error) {
@@ -171,9 +177,9 @@ exports.deleteTeam = async (req, res) => {
         - New team request is created for admin approval
 */
 exports.editTeamRequest = async (req, res) => {
-    const transaction = await sequelize.transaction();
-
+    let transaction;
     try {
+        transaction = await sequelize.transaction();
         const { id } = req.params;
         const { team_name, members } = req.body;
 
@@ -181,9 +187,14 @@ exports.editTeamRequest = async (req, res) => {
 
         if (!oldTeam) {
             await transaction.rollback();
-            return res.satus(404).json({ message: 'Team not found' });
+            return res.status(404).json({ message: 'Team not found' });
         }
 
+        const owner = await Sport.findOne({ where: { sport_id: oldTeam.sport_id, coach_id: req.user.user_id }, transaction });
+        if (!owner) {
+            await transaction.rollback();
+            return res.status(403).json({ message: 'Unauthorized team' });
+        }
         await oldTeam.update(
             { status: 'Inactive' },
             { transaction }
@@ -216,6 +227,7 @@ exports.editTeamRequest = async (req, res) => {
         })
     }
     catch (error) {
+        if (transaction && !transaction.finished) await transaction.rollback();
         console.error('Error updating team members: ', error);
         res.status(500).json({ message: 'Failed to send the update request' });
     }
