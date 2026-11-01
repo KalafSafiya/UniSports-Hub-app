@@ -1,34 +1,271 @@
-# UniSports Hub
 
-University sports management with a React frontend, Express API, MySQL for users/teams/bookings and MongoDB for news/announcements.
+# 🏅 UniSports Hub – University Sports Management System
 
-## Local setup
+**UniSports Hub** is a web-based university sports management platform designed to simplify and streamline sports-related activities within a university. It provides a centralized platform for managing sports teams, facilities, bookings, schedules, users, and communication between administrators, coaches, and students.
 
-Use Node.js 22 and npm. Run MySQL and MongoDB locally, or supply connection details for your development databases.
+Developed as part of the **IT 3162 – Group Project**.
 
-1. Run `npm ci` separately in `backend` and `frontend`.
-2. Copy each directory's `.env.example` to `.env` and fill in your values. Set a unique JWT secret. Never commit real credentials.
-3. In `backend` run `npm start` (or `npm run dev`). Startup creates missing MySQL tables and connects to MongoDB before listening on port 5000. The MySQL account needs database creation permission. Existing schemas are not automatically migrated or overwritten.
-4. In `frontend` run `npm start` and open http://localhost:3000. Restart the frontend after changing its API URL.
+---
 
-For a fresh database, after the tables exist, set ADMIN_NAME, ADMIN_USERNAME, ADMIN_EMAIL and ADMIN_PASSWORD in your local backend environment, then run `node scripts/createAdmin.js` from `backend`. Use at least 12 password characters. The script creates an Admin without exposing a public registration endpoint, and refuses to overwrite an existing account. Remove the bootstrap variables afterward. Existing administrators can create coaches through Manage Coaches.
+## 📘 Project Overview
 
-EMAIL_USER and EMAIL_PASS configure Gmail booking notifications. A notification failure is reported separately after the booking decision is saved.
+UniSports Hub aims to improve university sports management by replacing manual processes with an organized digital platform.
 
-## Verification
+The system provides role-based access for different users:
 
-- Backend: `npm test` from `backend` (30 regression tests using isolated database/mail substitutes).
-- Frontend: `npm test -- --watchAll=false --runInBand` from `frontend` (5 tests).
-- Production bundle: `npm run build` from `frontend`.
+- **Administrators:** Manage users, sports, teams, facilities, booking requests, and contact requests.
+- **Coaches:** Access and manage team-related information and sports schedules.
+- **Students / Guests:** Explore sports information, view teams, check schedules, and access announcements.
 
-The frontend Jest mappings support React Router 7 with the older test runner included in react-scripts. Tailwind uses version 2's purge configuration.
+The application consists of a React.js frontend, a Node.js and Express.js backend, and database integration using MySQL and MongoDB.
 
-A live end-to-end check still requires configured MySQL, MongoDB and email credentials. Verify guest booking/contact submissions, administrator approvals, coach team edits and attachment downloads against your development databases. Automated substitutes do not verify existing database schema compatibility or concurrent booking approvals.
+---
 
-## Access behavior
+## 🚀 Main Features
 
-Guest pages can read announcements, news, approved schedules and venues. Administrator APIs enforce the current account role. Deactivated accounts cannot reuse existing tokens. Coaches may edit/delete their own teams; edits return teams to administrator review. Contact attachments are downloaded through authenticated requests.
+### 1. User Management
+- User account management.
+- Role-based access for different user categories.
+- Authentication and authorization.
+- Secure password handling.
 
-## Sync the changes
+### 2. Sports Management
+- Add and manage sports.
+- Maintain sports-related information.
+- Manage sports categories and details.
 
-This review creates 15 local commits on main and does not push them. In VS Code Source Control, choose **Sync Changes** to publish them to origin/main, or run `git push origin main`. If GitHub has newer commits, pull and resolve any conflicts before pushing. Do not force-push.
+### 3. Team Management
+- Create and manage sports teams.
+- Maintain team information.
+- Associate teams with relevant sports.
+
+### 4. Facility and Ground Management
+- Manage university sports facilities and grounds.
+- Maintain venue-related information.
+- Support facility booking operations.
+
+### 5. Booking Management
+- Submit facility booking requests.
+- Manage booking requests.
+- Allow administrators to review and process requests.
+
+### 6. Sports Schedules
+- View upcoming sports events and schedules.
+- Organize sports-related activities.
+- Provide schedule information to users.
+
+### 7. News and Announcements
+- Display sports-related news and updates.
+- Provide information about university sports activities.
+
+### 8. Contact and Feedback
+- Provide a contact interface for users.
+- Receive and manage contact requests.
+- Support communication between users and administrators.
+
+### 9. Admin Dashboard
+- Centralized administrative interface.
+- Navigation to different management modules.
+- Access to administrative features and requests.
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend
+- React.js
+- Tailwind CSS
+- React Router DOM
+- Lucide React Icons
+- JavaScript
+
+### Backend
+- Node.js
+- Express.js
+- REST API architecture
+
+### Databases
+- MySQL / MariaDB
+- MongoDB
+
+### Authentication and Security
+- JSON Web Tokens (JWT)
+- bcrypt password hashing
+
+### Development Tools
+- Visual Studio Code
+- Git and GitHub
+- Postman
+- XAMPP / MariaDB
+
+---
+
+## 🏗️ System Architecture
+
+The application follows a client-server architecture.
+
+1. **Frontend Layer:** React.js provides the user interface and handles user interactions.
+2. **Backend Layer:** Node.js and Express.js handle application logic and API requests.
+3. **Database Layer:** MySQL and MongoDB are used for persistent data storage.
+
+The frontend communicates with the backend through API requests, while the backend handles database operations and returns the required responses.
+
+---
+
+## 📂 Project Structure
+
+```text
+UniSports-Hub/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── AdminComponents/
+│   │   ├── AdminPages/
+│   │   ├── Components/
+│   │   ├── Pages/
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── package.json
+│   └── README.md
+│
+├── backend/
+│   ├── routes/
+│   ├── controllers/
+│   ├── models/
+│   ├── config/
+│   ├── middleware/
+│   ├── package.json
+│   └── ...
+│
+└── README.md
+```
+
+*Note: Adjust the structure above to match the actual repository.*
+
+---
+
+## ⚙️ Installation and Setup
+
+### Prerequisites
+
+Make sure the following tools are installed:
+
+- Node.js and npm
+- Git
+- MySQL / MariaDB
+- MongoDB
+- Visual Studio Code
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/KalafSafiya/UniSports-Hub.git
+```
+
+### 2. Navigate into the Project Directory
+
+```bash
+cd UniSports-Hub
+```
+
+### 3. Frontend Setup
+
+Navigate to the frontend directory:
+
+```bash
+cd frontend
+```
+
+Install the required dependencies:
+
+```bash
+npm install
+```
+
+Start the frontend development server:
+
+```bash
+npm start
+```
+
+Open the application in your browser:
+
+```text
+http://localhost:3000
+```
+
+### 4. Backend Setup
+
+Open another terminal and navigate to the backend directory:
+
+```bash
+cd UniSports-Hub/backend
+```
+
+Install backend dependencies:
+
+```bash
+npm install
+```
+
+Configure the required database connections and environment variables.
+
+Create a `.env` file containing the required configuration values. Refer to the backend configuration for the actual variable names.
+
+Start the backend using the start script defined in its `package.json`:
+
+```bash
+npm start
+```
+
+### 5. Database Configuration
+
+Make sure the required database services are running.
+
+- Configure the MySQL / MariaDB connection.
+- Configure the MongoDB connection.
+- Apply the required database setup and configuration.
+- Ensure the backend can successfully connect to both databases.
+
+---
+
+## 🔐 Environment Configuration
+
+The backend requires appropriate environment variables for database connections, authentication, and application configuration.
+
+Refer to the backend configuration and environment template for the exact variable names and values.
+
+**Important:** Never commit passwords, database credentials, JWT secrets, or other sensitive configuration details to GitHub.
+
+---
+
+## 👥 Project Contributors
+
+**UniSports Hub** was developed collaboratively as part of the IT 3162 Group Project.
+
+The project involved frontend development, backend development, database integration, and system documentation.
+
+---
+
+## 🎓 Academic Information
+
+| Detail | Information |
+|---|---|
+| Project | UniSports Hub |
+| Module | IT 3162 – Group Project |
+| Project Type | Full-Stack Web Application |
+| Frontend | React.js |
+| Backend | Node.js and Express.js |
+| Databases | MySQL and MongoDB |
+| Version Control | Git and GitHub |
+
+---
+
+## 🌟 Project Objective
+
+The main objective of UniSports Hub is to provide a centralized and user-friendly platform for managing university sports activities, improving administrative efficiency, simplifying facility booking processes, and making sports-related information easily accessible to the university community.
+
+---
+
+**UniSports Hub – Bringing University Sports Management Together.**
